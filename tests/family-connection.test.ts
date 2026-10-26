@@ -24,7 +24,7 @@ test('persists only origin, never credentials; restarting requires login', async
   const restarted = createFamilyConnection({ storage });
   assert.equal(restarted.getOrigin(), 'https://study.example.com');
   assert.equal(restarted.isConnected(), false);
-  await assert.rejects(restarted.request('/api/ai/quiz'), /请先连接/);
+  await assert.rejects(restarted.request('/api/ai/quiz'), /请先配置 AI/);
 });
 
 test('credentials go only to selected origin; redirects and cookies are disabled', async () => {
@@ -58,7 +58,7 @@ test('disconnect clears session and switching uses the new origin', async () => 
 test('AI unavailable and no connection never contact any service', async () => {
   let calls = 0;
   const { client } = setup(async () => { calls++; throw Error('not called'); });
-  await assert.rejects(client.request('/api/health'), /请先连接/);
+  await assert.rejects(client.request('/api/health'), /请先配置 AI/);
   assert.equal(calls, 0);
 });
 
@@ -132,4 +132,44 @@ test('malformed health and unsuccessful replies never expose their contents', as
     client.configure('https://study.example.com', 'family', 'test-password');
     await assert.rejects(client.request('/api/health'), { message: '暂时无法连接 AI 服务，本地课程仍可使用' });
   }
+});
+
+test('direct AI sends only bounded lesson data and keeps the key on device', async () => {
+  const calls: Array<{ url: string; init?: RequestInit }> = [];
+  const reply = { choices: [{ message: { content: '```json\n{"questions":[{"question":"1+1?","options":["2","3","4","5"],"answer":0}]}\n```' } }] };
+  const { client, values } = setup(async (url, init) => { calls.push({ url: String(url), init }); return Response.json(reply); });
+  client.configureDirect({ provider: 'deepseek', base: 'https://api.deepseek.com/v1/', model: 'deepseek-flash', apiKey: 'secret-key' });
+  assert.equal(JSON.parse([...values.values()][0]).apiKey, 'secret-key');
+  assert.equal(client.getOrigin(), '');
+  const questions = await (await client.request('/api/ai/quiz', { body: JSON.stringify({ grade: '三年级', subject: '数学', topic: '加法', count: 1, difficulty: 'easy' }) })).json();
+  assert.equal(questions.questions[0].answer, 0);
+  assert.equal(calls[0].url, 'https://api.deepseek.com/v1/chat/completions');
+  const sent = JSON.parse(String(calls[0].init?.body));
+  assert.equal(sent.model, 'deepseek-flash');
+  assert.match(sent.messages[1].content, /加法/);
+  assert.equal(new Headers(calls[0].init?.headers).get('Authorization'), 'Bearer secret-key');
+  assert.equal(calls[0].init?.redirect, 'error');
+  await assert.rejects(client.request('/api/ai/tts'), /本地课程仍可使用/);
+  assert.equal(calls.length, 1);
+});
+
+test('direct AI rejects unsafe provider settings and clears a rejected key', async () => {
+  const { client, values } = setup(async () => new Response('provider-secret', { status: 401 }));
+  assert.throws(() => client.configureDirect({ provider: 'custom', base: 'http://api.example.com/v1', model: 'demo', apiKey: 'secret-key' }));
+  assert.throws(() => client.configureDirect({ provider: 'custom', base: 'https://api.example.com/v1?key=secret', model: 'demo', apiKey: 'secret-key' }));
+  client.configureDirect({ provider: 'custom', base: 'https://api.example.com/v1', model: 'demo-model', apiKey: 'secret-key' });
+  await assert.rejects(client.request('/api/ai/quiz', { body: '{}' }), { message: 'API Key 验证失败，请重新配置' });
+  assert.equal(client.getDirectAI(), null);
+  assert.equal(values.size, 0);
+});
+
+test('switching between direct and family modes removes the other saved credential', () => {
+  const { client, values } = setup();
+  client.configureDirect({ provider: 'openai', apiKey: 'secret-key' });
+  assert.equal(client.getDirectAI()?.model, 'gpt-4o-mini');
+  client.configure('https://study.example.com', 'family', 'test-password');
+  assert.equal(client.getDirectAI(), null);
+  assert.equal([...values.keys()].join(','), 'csf-family-ai-origin');
+  client.clear();
+  assert.equal(values.size, 0);
 });

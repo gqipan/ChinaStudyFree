@@ -219,7 +219,7 @@ export function ProfileClient() {
 
         {/* 家长设置：每日学习时间上限（默认关闭，家长自愿启用） */}
         <section
-          className="bg-white rounded-3xl border-2 border-bg-softer p-5"
+          className="bg-white rounded-3xl border-2 border-bg-softer p-5 mb-6 lg:mb-0"
           style={{ boxShadow: "0 4px 0 0 var(--shadow-card-color)" }}
         >
           <div className="flex items-center justify-between mb-1">
