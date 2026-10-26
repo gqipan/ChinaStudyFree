@@ -16,7 +16,19 @@ apps/server/dist/
 # 环境变量
 .env
 .env.local
+.env.*
+!.env.example
+!**/.env.example
 *.local
+
+# 私人签名及安装产物（即使误放到 release/ 之外也不提交）
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties
+*.apk
+*.aab
 
 # Tauri
 apps/desktop/src-tauri/target/

@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:web": "npm run build:web",
+    "build:web": "npm run build:web --prefix ../..",
     "add:android": "cap add android",
     "add:ios": "cap add ios",
     "sync:android": "cap sync android",
     "sync:ios": "cap sync ios",
     "open:android": "cap open android",
-    "open:ios": "cap open ios"
+    "open:ios": "cap open ios",
+    "build:family:android": "node ../../scripts/build-family-android.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.0",

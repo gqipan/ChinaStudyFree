@@ -1,3 +1,5 @@
+import { getFamilyConnection, IS_FAMILY_APP } from "./familyConnection";
+
 /**
  * ai.ts — 前端访问在线 AI 后端的统一入口。
  *
@@ -23,7 +25,16 @@ export const AI_BASE: string = isTauri
   : process.env.NEXT_PUBLIC_AI_BASE ?? "";
 
 export function aiUrl(path: string): string {
-  return `${AI_BASE}${path}`;
+  return `${IS_FAMILY_APP ? getFamilyConnection().getOrigin() : AI_BASE}${path}`;
+}
+
+/** Family requests never use cookies, follow redirects or expose upstream error bodies. */
+export function aiRequest(path: string, init?: RequestInit): Promise<Response> {
+  return IS_FAMILY_APP ? getFamilyConnection().request(path, init) : fetch(aiUrl(path), init);
+}
+
+export function aiConnectionRevision(): number {
+  return IS_FAMILY_APP ? getFamilyConnection().revision() : 0;
 }
 
 export interface AIQuestion {
@@ -42,7 +53,7 @@ export async function generateQuiz(opts: {
   count?: number;
   difficulty?: "easy" | "medium" | "hard";
 }): Promise<AIQuestion[]> {
-  const res = await fetch(aiUrl("/api/ai/quiz"), {
+  const res = await aiRequest("/api/ai/quiz", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(opts),
@@ -64,6 +75,7 @@ export async function generateQuiz(opts: {
   if (!data.ok) {
     const err = new Error(data.error || "AI 出题失败") as Error & { code?: string };
     err.code = data.code;
+    if (IS_FAMILY_APP) err.message = "AI 暂时不可用，本地课程仍可使用";
     throw err;
   }
   return data.questions as AIQuestion[];
@@ -71,7 +83,7 @@ export async function generateQuiz(opts: {
 
 /** 在线语音合成：返回可播放的 object URL（调用方负责 revoke）。 */
 export async function synthesizeSpeech(text: string, voice?: string): Promise<string> {
-  const res = await fetch(aiUrl("/api/ai/tts"), {
+  const res = await aiRequest("/api/ai/tts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text, voice }),

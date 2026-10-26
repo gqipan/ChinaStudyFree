@@ -26,7 +26,9 @@
     "package:offline": "bash scripts/package-offline.sh",
     "sync:android": "npx @capacitor/cli sync android",
     "sync:ios": "npx @capacitor/cli sync ios",
-    "icons:android": "python scripts/gen-android-icons.py"
+    "icons:android": "python scripts/gen-android-icons.py",
+    "build:family:android": "node scripts/build-family-android.mjs",
+    "test:family": "node --import tsx --test tests/family-connection.test.ts"
   },
   "dependencies": {
     "ws": "^8.18.0"

@@ -21,7 +21,7 @@
  */
 
 import { isMuted } from "./sfx";
-import { aiUrl, synthesizeSpeech } from "./ai";
+import { aiRequest, aiConnectionRevision, synthesizeSpeech } from "./ai";
 
 let el: HTMLAudioElement | null = null;
 let currentSrc: string | null = null;
@@ -126,19 +126,27 @@ export function isPlayingTTS(src: string): boolean {
 
 let onlineTTSAvailable: boolean | null = null;
 let onlineTTSProbe: Promise<boolean> | null = null;
+let onlineTTSRevision = -1;
 
 /** 探活一次 `/api/health`，看后端是否配置了 TTS Key。 */
 function probeOnlineTTS(): Promise<boolean> {
+  const revision = aiConnectionRevision();
+  if (revision !== onlineTTSRevision) {
+    onlineTTSRevision = revision;
+    onlineTTSAvailable = null;
+    onlineTTSProbe = null;
+  }
   if (onlineTTSAvailable !== null) return Promise.resolve(onlineTTSAvailable);
   if (!onlineTTSProbe) {
-    onlineTTSProbe = fetch(aiUrl("/api/health"))
+    onlineTTSProbe = aiRequest("/api/health")
       .then(r => r.json())
       .then((d: { tts?: boolean }) => {
+        if (revision !== aiConnectionRevision()) return false;
         onlineTTSAvailable = !!d?.tts;
         return onlineTTSAvailable;
       })
       .catch(() => {
-        onlineTTSAvailable = false;
+        if (revision === aiConnectionRevision()) onlineTTSAvailable = false;
         return false;
       });
   }

@@ -29,6 +29,7 @@ import {
   Gem,
 } from "@/components/icons";
 import { ThemeModeToggle } from "@/components/ThemeModeToggle";
+import { FamilyAISettings } from "@/components/FamilyAISettings";
 import { playSfx } from "@/lib/sfx";
 import { haptic } from "@/lib/haptic";
 
@@ -60,6 +61,7 @@ export function ProfileClient() {
   return (
     <AppShell right={null} centerMaxWidth={920}>
     <main className="min-h-screen bg-bg-soft lg:bg-transparent relative">
+      <FamilyAISettings />
       {/* Header —— 移动端白底 sticky；桌面端简化为 标题 + compact HUD */}
       <div className="bg-white border-b border-bg-softer sticky top-0 z-10 lg:bg-transparent lg:border-0 lg:static lg:mb-2">
         <div className="max-w-2xl lg:max-w-4xl mx-auto flex items-center justify-between gap-3 px-4 py-3 lg:px-0 lg:py-2">

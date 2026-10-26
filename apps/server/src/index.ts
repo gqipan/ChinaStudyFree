@@ -235,7 +235,7 @@ app.post("/api/ai/quiz", async (req: Request, res: Response) => {
     res.json({ ok: true, questions: parsed.questions });
   } catch (e) {
     if (e instanceof LLMNotConfigured) return fail(res, 501, "AI 未配置（LLM_API_KEY 缺失）", "LLM_NOT_CONFIGURED");
-    console.error("[quiz]", e);
+    log("error", "quiz request failed");
     fail(res, 500, "服务暂时不可用，请稍后重试");
   }
 });
@@ -264,7 +264,7 @@ app.post("/api/ai/explain", async (req: Request, res: Response) => {
     res.json({ ok: true, explanation: text.trim() });
   } catch (e) {
     if (e instanceof LLMNotConfigured) return fail(res, 501, "AI 未配置（LLM_API_KEY 缺失）", "LLM_NOT_CONFIGURED");
-    console.error("[explain]", e);
+    log("error", "explain request failed");
     fail(res, 500, "服务暂时不可用，请稍后重试");
   }
 });
@@ -312,7 +312,7 @@ app.post("/api/ai/story", async (req: Request, res: Response) => {
     res.json({ ok: true, story, image });
   } catch (e) {
     if (e instanceof LLMNotConfigured) return fail(res, 501, "AI 未配置（LLM_API_KEY 缺失）", "LLM_NOT_CONFIGURED");
-    console.error("[story]", e);
+    log("error", "story request failed");
     fail(res, 500, "服务暂时不可用，请稍后重试");
   }
 });
@@ -352,7 +352,7 @@ app.post("/api/ai/tts", async (req: Request, res: Response) => {
     res.send(buffer);
   } catch (e) {
     if (e instanceof TTSNotConfigured) return fail(res, 501, "TTS 未配置（DASHSCOPE_API_KEY 缺失）", "TTS_NOT_CONFIGURED");
-    console.error("[tts]", e);
+    log("error", "tts request failed");
     fail(res, 500, "服务暂时不可用，请稍后重试");
   }
 });

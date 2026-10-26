@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { generateQuiz, synthesizeSpeech, type AIQuestion } from "@/lib/ai";
 
@@ -52,7 +53,11 @@ export default function AIDemoPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-1 text-2xl font-extrabold text-[#58CC02]">聪聪 · 在线 AI 实验室</h1>
-      <p className="mb-6 text-sm text-gray-500">实时出题与语音合成（需服务端配置大模型 / TTS Key）</p>
+      <p className="mb-3 text-sm text-gray-500">在线出题与朗读为可选功能，暂时不可用时仍可学习本地课程。</p>
+      <div className="mb-6 flex gap-4 text-sm font-bold text-primary">
+        <Link href="/">返回课程</Link>
+        <Link href="/profile/">设置家庭 AI</Link>
+      </div>
 
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <label className="text-xs text-gray-600">
