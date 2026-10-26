@@ -55,7 +55,7 @@ export function FamilyAISettings() {
   }
 
   return (
-    <section className="mx-auto my-4 max-w-2xl rounded-2xl border border-bg-softer bg-white p-4 lg:max-w-4xl" aria-labelledby="family-ai-title">
+    <section className="rounded-3xl border-2 border-bg-softer bg-white p-5 lg:col-span-2" aria-labelledby="family-ai-title">
       <details>
         <summary id="family-ai-title" className="cursor-pointer font-extrabold text-ink">家庭 AI 服务（可选）</summary>
         <p className="mt-3 text-sm text-ink-light">由家长设置。无需连接也能学习和保存进度；在线 AI 仅用于额外出题与朗读。</p>

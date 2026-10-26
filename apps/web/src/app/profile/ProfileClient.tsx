@@ -61,7 +61,6 @@ export function ProfileClient() {
   return (
     <AppShell right={null} centerMaxWidth={920}>
     <main className="min-h-screen bg-bg-soft lg:bg-transparent relative">
-      <FamilyAISettings />
       {/* Header —— 移动端白底 sticky；桌面端简化为 标题 + compact HUD */}
       <div className="bg-white border-b border-bg-softer sticky top-0 z-10 lg:bg-transparent lg:border-0 lg:static lg:mb-2">
         <div className="max-w-2xl lg:max-w-4xl mx-auto flex items-center justify-between gap-3 px-4 py-3 lg:px-0 lg:py-2">
@@ -204,23 +203,6 @@ export function ProfileClient() {
           <div className="text-ink-softer text-xl">›</div>
         </SoundLink>
 
-        {/* ☕ 打赏支持 —— 自愿，不影响任何功能 */}
-        <SoundLink
-          href="/donate"
-          hapticIntensity="medium"
-          className="group flex items-center gap-4 bg-white rounded-3xl border-2 border-bg-softer p-5 hover:border-primary transition-colors mb-6 lg:mb-0"
-          style={{ boxShadow: "0 4px 0 0 var(--shadow-card-color)" }}
-        >
-          <div className="w-12 h-12 rounded-2xl bg-warning/10 text-warning flex items-center justify-center group-hover:bg-warning group-hover:text-white transition-colors text-2xl">
-            ☕
-          </div>
-          <div className="flex-1">
-            <div className="text-base font-extrabold text-ink">打赏支持</div>
-            <div className="text-sm text-ink-light">自愿打赏一杯咖啡 · 不影响任何功能</div>
-          </div>
-          <div className="text-ink-softer text-xl">›</div>
-        </SoundLink>
-
         {/* 外观：免费深色模式三态开关（跟随系统 / 亮 / 暗） */}
         <section
           className="bg-white rounded-3xl border-2 border-bg-softer p-5 mb-6 lg:mb-0"
@@ -280,6 +262,8 @@ export function ProfileClient() {
             })}
           </div>
         </section>
+
+        <FamilyAISettings />
 
         {/* 💾 数据 · 存档备份（E2）：导出 / 导入，BackupEnvelope v1 双端互通 */}
         <BackupSection />

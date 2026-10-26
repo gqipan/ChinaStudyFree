@@ -69,3 +69,7 @@ npm run build:family:android --workspace=china-study-free-mobile -- release
 Next 静态导出每页都有自己的目录 index.html，不能使用单页应用的根首页回退。家庭构建复制 apps/mobile/native/ 的路由适配类，只对同源主文档 GET 请求映射目录索引，并保留 Capacitor 的资源加载与桥接。构建时执行 test:family:native，检查完整导出页面与请求隔离。独立运行此测试前需要先生成 apps/web/out。
 
 若升级修复包，请直接覆盖安装同签名家庭版，保留已有学习进度；不要为了路由问题先卸载或清除应用数据。
+
+## 教材入口（家庭简化版）
+
+教材中心优先引导到国家中小学智慧教育平台查找课本，是否需要登录、是否支持下载以官方页面为准；账号只在官方平台使用，本应用不收集。GitHub ChinaTextbook 只保留备用入口。应用不再同步全量 GitHub 书目，也没有新增自动下载或 PDF 阅读器。需要离线看外部教材时，应先按平台允许的方式保存文件，并使用手机上的 PDF 阅读器。
