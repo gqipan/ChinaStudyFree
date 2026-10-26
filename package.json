@@ -28,7 +28,8 @@
     "sync:ios": "npx @capacitor/cli sync ios",
     "icons:android": "python scripts/gen-android-icons.py",
     "build:family:android": "node scripts/build-family-android.mjs",
-    "test:family": "node --import tsx --test tests/family-connection.test.ts"
+    "test:family": "node --import tsx --test tests/family-connection.test.ts",
+    "test:family:native": "node --test tests/family-native-routes.test.mjs"
   },
   "dependencies": {
     "ws": "^8.18.0"

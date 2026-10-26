@@ -51,6 +51,7 @@ function main() {
   env.GRADLE_USER_HOME = process.env.GRADLE_USER_HOME || path.join(root, 'tools/gradle-home');
   if (!env.JAVA_HOME && existsSync('/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home')) env.JAVA_HOME = '/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home';
   run('npm', ['run', 'build:web'], { env });
+  run(process.execPath, ['--test', 'tests/family-native-routes.test.mjs'], { env });
   if (!existsSync(path.join(sdk, 'platforms/android-34/android.jar'))) throw new Error('Android SDK platform 34 is required; see docs/family-android.md.');
 
   const mobile = path.join(root, 'apps/mobile');
@@ -69,9 +70,11 @@ function main() {
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
+import com.chinastudyfree.offline.FamilyWebViewClient;
 public class MainActivity extends BridgeActivity {
   @Override public void onCreate(Bundle state) {
     super.onCreate(state);
+    getBridge().setWebViewClient(new FamilyWebViewClient(getBridge()));
     getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
       @Override public void handleOnBackPressed() {
         if (getBridge() != null && getBridge().getWebView().canGoBack()) {
@@ -82,6 +85,11 @@ public class MainActivity extends BridgeActivity {
   }
 }
 `);
+  const nativeSources = path.join(android, 'app/src/main/java/com/chinastudyfree/offline');
+  mkdirSync(nativeSources, { recursive: true });
+  for (const name of ['StaticRoutePaths.java', 'FamilyWebViewClient.java']) {
+    copyFileSync(path.join(mobile, 'native', name), path.join(nativeSources, name));
+  }
   const manifest = path.join(android, 'app/src/main/AndroidManifest.xml');
   writeFileSync(manifest, readFileSync(manifest, 'utf8')
     .replace('android:allowBackup="true"', 'android:allowBackup="false"')
